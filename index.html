@@ -1301,13 +1301,21 @@ function placeLabels(ch, items, o){
     const ANG = [0, 180, -90, 90, -35, 35, -145, 145, -60, 60, -120, 120];
     const order = bubbles.filter(it => it.label).sort((p, q) => (q.must ? 1 : 0) - (p.must ? 1 : 0) || q.r - p.r);
     order.forEach(it => {
-      const w = tw(it.label), h = th, maxK = it.must ? 12 : 0;
-      for (let k = 0; k <= maxK; k++) for (const deg of ANG) {
+     const w = tw(it.label), h = th, maxK = it.must ? 12 : 0;
+     for (const strict of [true, false]) { let done = false;
+      for (let k = o.lead ? 1 : 0; k <= Math.max(maxK, o.lead ? 18 : 0); k++) for (const deg of ANG) {
         const rad = deg * Math.PI / 180, cs = Math.cos(rad), sn = Math.sin(rad), d = it.rad + 5 + k * 15;
         const ax = it.cx + cs * d, ay = it.cy + sn * d;
         const r = {x:cs > 0.3 ? ax : cs < -0.3 ? ax - w : ax - w / 2, y:sn > 0.3 ? ay : sn < -0.3 ? ay - h : ay - h / 2, w, h};
         if (r.x < box.x0 || r.x + r.w > box.x1 || r.y < box.y0 || r.y + r.h > box.y1) continue;
         if (rects.some(q => hitRR(r, q)) || bubbles.some(c => hitRC(r, c))) continue;
+        if (k > 0) {
+          const tx0 = Math.max(r.x, Math.min(ax, r.x + r.w)), ty0 = Math.max(r.y, Math.min(ay, r.y + r.h));
+          const segDist = (c) => { const vx = it.cx - tx0, vy = it.cy - ty0, L2 = vx * vx + vy * vy || 1; let u = ((c.cx - tx0) * vx + (c.cy - ty0) * vy) / L2; u = Math.max(0, Math.min(1, u)); return Math.hypot(tx0 + u * vx - c.cx, ty0 + u * vy - c.cy); };
+          if (strict && bubbles.some(c => c !== it && segDist(c) < c.rad + 3)) continue;
+          let crossRect = false; for (let s = 0; s <= 12 && !crossRect; s++) { const px2 = tx0 + (it.cx - tx0) * s / 12, py2 = ty0 + (it.cy - ty0) * s / 12; if (rects.some(q => px2 > q.x - 1 && px2 < q.x + q.w + 1 && py2 > q.y - 1 && py2 < q.y + q.h + 1)) crossRect = true; }
+          if (crossRect) continue;
+        }
         rects.push(r);
         els.push({type:'text', silent:true, z:10, x:r.x, y:r.y, style:{text:it.label, font, fill:css('--ink2'), stroke:'#fff', lineWidth:3, textAlign:'left', textVerticalAlign:'top'}});
         if (k > 0) {
@@ -1319,6 +1327,7 @@ function placeLabels(ch, items, o){
         }
         return;
       }
+     }
     });
     ch.setOption({graphic:[ch.__yt, {id:'lbls', $action:'replace', type:'group', children:els}].filter(Boolean)});
   };
@@ -1361,7 +1370,7 @@ function drawAccel(){
     series:[{type:'line', data:[[lo, lo], [hi, hi]], symbol:'none', silent:true, z:1, lineStyle:{type:'dashed', color:css('--ink3'), width:1.2}, tooltip:{show:false}},
       {type:'scatter', symbolSize:22, z:3, data:pts.map(p => ({value:[p.x, p.y], name:p.s.title, sid:p.s.id, itemStyle:{color:SC[p.s.id], borderColor:'#fff', borderWidth:1.5},
         label:{show:false}}))}]});
-  placeLabels(ch, pts.map(p => ({x:p.x, y:p.y, r:22, label:p.s.title, color:SC[p.s.id], must:true})), {fs:11,
+  placeLabels(ch, pts.map(p => ({x:p.x, y:p.y, r:22, label:p.s.title, color:SC[p.s.id], must:true})), {fs:11, lead:true,
     extra:(px, box) => [{text:'Speeding up', x:box.x0 + 6, y:box.y0 + 4, align:'left', color:css('--pos')}, {text:'Slowing down', x:box.x1 - 6, y:box.y1 - 20, align:'right', color:css('--neg')}]});
 }
 function drawTree(){
@@ -1538,7 +1547,7 @@ function drawSectorBubble(id){
     xAxis:axisVal(v => v + '%', {min:xmin, max:xmax, name:'Revenue growth, latest quarter, y/y', nameLocation:'middle', nameGap:28, nameTextStyle:{color:css('--ink3'), fontSize:11}}),
     yAxis:axisVal(v => v + '%', {min:ymin, max:ymax, name:'EBIT margin, latest quarter', nameLocation:'middle', nameGap:40, nameTextStyle:{color:css('--ink3'), fontSize:11}}),
     series});
-  placeLabels(ch, series.flatMap(s => s.data.map(d => ({x:d.value[0], y:d.value[1], r:d.value[2], label:d.lab, color:d.col, must:true}))), {fs:10.5});
+  placeLabels(ch, series.flatMap(s => s.data.map(d => ({x:d.value[0], y:d.value[1], r:d.value[2], label:d.lab, color:d.col, must:true}))), {fs:10.5, lead:true});
   ch.on('click', p => { if (p.data && p.data.tk) location.hash = p.data.tk.toLowerCase(); });
 }
 function sector(id){
