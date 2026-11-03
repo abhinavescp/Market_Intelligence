@@ -87,7 +87,7 @@ main{padding-block:26px 56px}
 .eyebrow a{color:var(--ink3);text-decoration:none}
 .eyebrow a:hover{color:var(--teal)}
 h1{font-family:var(--head);font-weight:600;letter-spacing:-.005em;font-size:var(--s6);line-height:1.22;margin:8px 0 10px;max-width:30em;text-wrap:balance}
-.lead{color:var(--ink2);max-width:68ch;margin:0 0 20px}
+.lead{color:var(--ink2);max-width:68ch;margin:0 0 20px}.lead.wide{max-width:none}
 h2{font-size:var(--s4);font-weight:600;margin:0 0 4px;text-wrap:balance}
 h3{font-size:var(--s2);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px}
 .sub{color:var(--ink3);font-size:var(--s2);margin:0 0 12px}
@@ -543,7 +543,7 @@ table.ind td{vertical-align:top}
 <div class="subnav" id="subnav" hidden><div class="wrap" id="subnavIn"></div></div>
 <main class="wrap" id="app"></main>
 <div class="tour" id="tour" role="dialog" aria-modal="true" aria-labelledby="tourT" aria-live="polite"><div class="tspot" id="tourSpot"></div><div class="tcard" id="tourCard"><div class="tstep" id="tourN"></div><h3 id="tourT"></h3><p id="tourP"></p><div class="tact"><button type="button" class="tgo" id="tourGo"></button><button type="button" class="tskip" id="tourSkip">Skip</button></div></div></div>
-<footer><div class="wrap"><span>Built by Abhinav from company filings, earnings calls and consensus estimates. Not investment advice.<br>© 2026 Abhinav Kumar. All rights reserved.</span><span id="asof"></span></div></footer>
+<footer><div class="wrap"><span>Built by Abhinav from company filings, earnings calls and consensus estimates, together with publicly available sources such as S&amp;P Global, J.P.Morgan, the IMF, the OECD, ZEW and other institutions. Not investment advice.<br>© 2026 Abhinav Kumar. All rights reserved.</span><span id="asof"></span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script>
@@ -1302,8 +1302,8 @@ function homeMacroHtml(){
   const cards = MXS.dir === 'down' ? down : up, o = Math.min(MXS.open, cards.length - 1), c = cards[o];
   const svg = n => `<svg viewBox="0 0 24 24" aria-hidden="true">${MXI[n]}</svg>`;
   return `<section class="panel" id="homeMacro"><h2>The macroeconomic backdrop: the sectors and the economy move each other</h2>
-    <p class="sub">Macroeconomic indicators set demand, costs and financing for the sectors. The sectors, in turn, feed back into the indicators. Pick a direction, then a card.</p>
-    <div class="mx-seg" role="tablist" aria-label="Direction of influence"><button type="button" role="tab" data-mxdir="down" aria-selected="${MXS.dir === 'down'}"><span class="mx-sic">${svg('globe')}</span>Economy affects sectors</button><button type="button" role="tab" data-mxdir="up" aria-selected="${MXS.dir === 'up'}"><span class="mx-sic">${svg('chip')}</span>Sectors affect economy</button></div>
+    <p class="sub">Macroeconomic indicators set demand, costs and financing for the sectors. The sectors, in turn, feed back into the indicators. Switch between the macro drivers behind the sectors and the feedback from the sectors, then pick a card.</p>
+    <div class="mx-seg" role="tablist" aria-label="Macro drivers on the sectors, or sector feedback on the economy"><button type="button" role="tab" data-mxdir="down" aria-selected="${MXS.dir === 'down'}"><span class="mx-sic">${svg('globe')}</span>Macro drivers</button><button type="button" role="tab" data-mxdir="up" aria-selected="${MXS.dir === 'up'}"><span class="mx-sic">${svg('chip')}</span>Sector feedback</button></div>
     <div class="mx-cards">${cards.map((x, i) => `<button type="button" class="mx-card ${i === o ? 'on' : ''}" data-mxi="${i}" aria-pressed="${i === o}"><span class="mx-ic">${svg(x.ic)}</span><b>${esc(x.t)}</b><span class="mx-stat">${esc(x.stat)}</span><span class="mx-gist">${esc(x.gist)}</span></button>`).join('')}</div>
     <div class="mx-detail" aria-live="polite"><span class="mx-ic big">${svg(c.ic)}</span><div><h3>${esc(c.t)}</h3><p>${c.body}</p>${c.link ? `<a class="mx-link" href="#${c.link[0]}">${esc(c.link[1])} →</a>` : `<button type="button" class="mx-link" data-mxscroll="${c.scroll[0]}">${esc(c.scroll[1])} →</button>`}</div></div>
     <p class="note" style="margin-top:8px">Sources: IMF World Economic Outlook, October 2026; S&amp;P Global and J.P.Morgan PMI releases, October 2026.</p></section>`;
@@ -1323,7 +1323,7 @@ function home(){
   app.innerHTML = `
   <div class="eyebrow"><span>Overview</span><span>Data as of ${fmtDate(ASOF)}</span><span>51 companies · 7 sectors</span></div>
   <h1>Industrial growth is coming from AI: the AI supply chain grew ${ai.medLatestYoy.toFixed(0)}%, while ${verbG(oem.medLatestYoy) === verbG(t1.medLatestYoy) ? `automobile companies and their suppliers ${verbG(oem.medLatestYoy)}` : `automobile companies ${verbG(oem.medLatestYoy)} and their suppliers ${verbG(t1.medLatestYoy)}`}</h1>
-  <p class="lead">Median revenue growth in each sector's latest reported quarter, against what consensus expects for the next four quarters. Consensus does not expect the gap between the AI chain and the automobile industry to close over the next year. ${modeText()}</p>
+  <p class="lead wide">Median revenue growth in each sector's latest reported quarter, against what consensus expects for the next four quarters. Consensus does not expect the gap between the AI chain and the automobile industry to close over the next year. ${modeText()}</p>
   ${ktHtml(homeKT(), homeKTglobal())}
   <div class="board">
     <div class="tile"><div class="k">Data Centre and AI, latest quarter</div><div class="v up">${pct(ai.medLatestYoy)}</div><div class="d">next 4 quarters ${pct(ai.medNext4)}</div></div>
