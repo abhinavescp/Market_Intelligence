@@ -412,6 +412,24 @@ table.ind td{vertical-align:top}
 .mx-detail h3{margin:0 0 6px;text-transform:none;letter-spacing:0;font-size:17px;color:var(--ink)}.mx-detail p{margin:0 0 8px;color:var(--ink);line-height:1.55}
 .mx-link{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--teal);cursor:pointer;text-decoration:none}.mx-link:hover{text-decoration:underline}
 @media(max-width:560px){.mx-detail{flex-direction:column}}
+.sdots-x{}
+#sdots{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:15;display:none;flex-direction:column;gap:6px;padding:8px 6px;border-radius:999px;background:rgba(255,255,255,.7);backdrop-filter:blur(4px)}
+#sdots button{width:22px;height:22px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+#sdots button::before{content:"";width:9px;height:9px;border-radius:50%;background:#C6DCDF;transition:transform .2s,background .2s}
+#sdots button.done::before{background:var(--navy)}
+#sdots button.on::before{background:var(--teal);transform:scale(1.5)}
+#sdots button:hover::before{background:var(--teal)}
+#sdots button:focus-visible{outline:2px solid var(--teal);outline-offset:1px;border-radius:50%}
+@media (min-width:1180px){#sdots{display:flex}}
+#cookieBar{position:fixed;left:16px;right:16px;bottom:16px;z-index:70;max-width:640px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between;background:var(--ink);color:#fff;padding:12px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+#cookieBar p{margin:0;font-size:13.5px;line-height:1.45;flex:1 1 260px;color:#fff}#cookieBar button{border:0;border-radius:999px;padding:8px 16px;font:inherit;font-weight:600;cursor:pointer;background:#fff;color:var(--ink);margin-left:8px}#cookieBar button[data-c=denied]{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)}
+@media print{#cookieBar{display:none}}
+#sbar{position:fixed;left:0;right:0;top:0;height:3px;z-index:60;pointer-events:none}
+#sbar i{display:block;height:100%;background:var(--g1);transform:scaleX(0);transform-origin:left}
+@media (min-width:1180px){#sbar{display:none}}
+@media print{#sdots,#sbar{display:none}}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .45s ease;will-change:opacity,transform}.rv.in{opacity:1;transform:none;will-change:auto}
+@media print,(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important;transition:none!important}}
 .mlist{margin:6px 0 0;padding-left:18px;color:var(--ink2);font-size:14px;line-height:1.5}.mlist li{margin-bottom:8px}.mlist b{color:var(--ink)}
 .mt-pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 9px;vertical-align:middle;background:var(--sunk);color:var(--ink2);border:1px solid var(--line2);white-space:nowrap}
 .mt-pill.built,.mt-pill.automated{background:var(--posbg);color:var(--pos);border-color:var(--pos)}
@@ -543,7 +561,7 @@ table.ind td{vertical-align:top}
 <div class="subnav" id="subnav" hidden><div class="wrap" id="subnavIn"></div></div>
 <main class="wrap" id="app"></main>
 <div class="tour" id="tour" role="dialog" aria-modal="true" aria-labelledby="tourT" aria-live="polite"><div class="tspot" id="tourSpot"></div><div class="tcard" id="tourCard"><div class="tstep" id="tourN"></div><h3 id="tourT"></h3><p id="tourP"></p><div class="tact"><button type="button" class="tgo" id="tourGo"></button><button type="button" class="tskip" id="tourSkip">Skip</button></div></div></div>
-<footer><div class="wrap"><span>Built by Abhinav from company filings, earnings calls and consensus estimates, together with publicly available sources such as S&amp;P Global, J.P.Morgan, the IMF, the OECD, ZEW and other institutions. Not investment advice.<br>© 2026 Abhinav Kumar. All rights reserved.</span><span id="asof"></span></div></footer>
+<footer><div class="wrap"><span>Built by Abhinav from company filings, earnings calls and consensus estimates, together with publicly available sources such as S&amp;P Global, J.P.Morgan, the IMF, the OECD, ZEW and other institutions. Not investment advice. This site uses basic analytics.<br>© 2026 Abhinav Kumar. All rights reserved.</span><span id="asof"></span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script>
@@ -2808,6 +2826,65 @@ function aboutPage(){
   <div class="mt-contact" aria-label="Contact">${LI}<a href="mailto:abhinavescp@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Mail me</a></div></div>`;
 }
 
+/* ---------- gentle scroll reveal ---------- */
+let rvIO = null, rvTimer = null;
+function reveal(){
+  if (rvIO){ rvIO.disconnect(); rvIO = null; } clearTimeout(rvTimer);
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const vh = window.innerHeight, els = [...app.querySelectorAll('.panel, .kt, .board, .gcard, .tcard, .mt-lanes, .mx-detail')]
+    .filter(e => !e.closest('.mt-nav') && e.getBoundingClientRect().top > vh * 0.92);
+  if (!els.length) return;
+  rvIO = new IntersectionObserver(es => { es.forEach(en => { if (en.isIntersecting){ en.target.classList.add('in'); rvIO.unobserve(en.target); } }); app.querySelectorAll('.rv:not(.in)').forEach(e => { if (e.getBoundingClientRect().bottom < 0){ e.classList.add('in'); rvIO.unobserve(e); } }); }, {rootMargin:'0px 0px -4% 0px'});
+  els.forEach(e => { e.classList.add('rv'); rvIO.observe(e); });
+  rvTimer = setTimeout(() => app.querySelectorAll('.rv:not(.in)').forEach(e => e.classList.add('in')), 4000);
+}
+/* ---------- page progress: dots (wide screens) and a thin bar (narrow) ---------- */
+let sdTargets = [], sdRaf = 0;
+function sdTitle(e){ const h = e.matches('h2') ? e : e.querySelector('h2, h3'); return (h ? h.textContent : (e.getAttribute('aria-label') || 'Section')).trim().slice(0, 70); }
+function scrollDots(){
+  document.getElementById('sdots')?.remove(); document.getElementById('sbar')?.remove(); sdTargets = [];
+  let c = app.querySelector('.mt-body') ? [...app.querySelectorAll('.mt-body h2')] : [...app.querySelectorAll('.panel, .kt, section.cards, section:has(> .cards)')].filter(e => !e.parentElement.closest('.panel, .kt') && e.offsetHeight > 60);
+  c = [...new Set(c)];
+  if (c.length > 12){ const n = 12; c = Array.from({length:n}, (_, i) => c[Math.round(i * (c.length - 1) / (n - 1))]); }
+  sdTargets = c;
+  const bar = document.createElement('div'); bar.id = 'sbar'; bar.setAttribute('aria-hidden', 'true'); bar.innerHTML = '<i></i>'; document.body.appendChild(bar);
+  if (c.length >= 3){
+    const nav = document.createElement('nav'); nav.id = 'sdots'; nav.setAttribute('aria-label', 'Page progress');
+    nav.innerHTML = c.map((e, i) => `<button type="button" data-i="${i}" title="${esc(sdTitle(e))}" aria-label="Go to section ${i + 1}: ${esc(sdTitle(e))}"></button>`).join('');
+    nav.addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; const el = sdTargets[+b.dataset.i]; window.scrollTo({top:el.getBoundingClientRect().top + scrollY - 84, behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+    document.body.appendChild(nav);
+  }
+  sdUpdate();
+}
+function sdUpdate(){
+  sdRaf = 0;
+  const h = document.documentElement.scrollHeight - innerHeight, p = h > 0 ? Math.min(1, Math.max(0, scrollY / h)) : 0, bar = document.querySelector('#sbar i');
+  if (bar) bar.style.transform = `scaleX(${p})`;
+  const nav = document.getElementById('sdots'); if (!nav || !sdTargets.length) return;
+  let cur = 0; sdTargets.forEach((e, i) => { if (e.getBoundingClientRect().top <= innerHeight * 0.4) cur = i; });
+  if (p > 0.985) cur = sdTargets.length - 1;
+  nav.querySelectorAll('button').forEach((b, i) => { b.classList.toggle('on', i === cur); b.classList.toggle('done', i < cur); if (i === cur) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+}
+window.addEventListener('scroll', () => { if (!sdRaf) sdRaf = requestAnimationFrame(sdUpdate); }, {passive:true});
+window.addEventListener('resize', () => { if (!sdRaf) sdRaf = requestAnimationFrame(sdUpdate); });
+/* ---------- Google Analytics 4 (switched off until an ID is set; loads only after consent) ---------- */
+const GA_ID = 'G-21N7JR28SN';   /* paste your GA4 measurement ID here, for example 'G-XXXXXXXXXX' */
+function gaInit(){
+  if (!GA_ID) return;
+  window.dataLayer = window.dataLayer || []; const gtag = function(){ dataLayer.push(arguments); }; window.gtag = gtag;
+  const s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID); document.head.appendChild(s);
+  gtag('js', new Date()); gtag('config', GA_ID, {send_page_view:false});
+  document.addEventListener('click', e => { const a = e.target.closest('a[href]'); if (!a) return; const h = a.getAttribute('href');
+    if (/^mailto:/.test(h)) gtag('event', 'contact_click', {method:'email'});
+    else if (/linkedin\.com/.test(h)) gtag('event', 'contact_click', {method:'linkedin'});
+    else if (/abhinavescp\.github\.io/.test(h)) gtag('event', 'contact_click', {method:'portfolio'}); });
+}
+function gaPage(){
+  if (!window.gtag) return;
+  const h1 = document.querySelector('#app h1'), title = (h1 ? h1.textContent : location.hash.slice(1) || 'Overview').trim().slice(0, 90);
+  window.gtag('event', 'page_view', {page_title:title, page_location:location.href, page_path:location.pathname + (location.hash || '#home')});
+}
+gaInit();
 /* ---------- router ---------- */
 function route(){
   charts.forEach(c => c.dispose()); charts = [];
@@ -2825,6 +2902,9 @@ function route(){
   else if (h === 'method') method();
   else if (h === 'about') aboutPage();
   else home();
+  reveal();
+  scrollDots();
+  gaPage();
 }
 let lastHash = null;
 window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
