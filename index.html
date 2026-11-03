@@ -278,6 +278,7 @@ th{border-bottom:0}
 .kt ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
 .kt li{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;min-width:0;padding:14px;border-radius:12px;background:var(--sunk)}
 .kt .n{width:30px;height:30px;border-radius:50%;background:var(--g1);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.kt .kt-sub{margin:18px 0 10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);font-weight:700}
 .kt .tag{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin:1px 0 4px}
 .kt p{margin:0;color:var(--ink);font-size:14.5px;line-height:1.5}
 @media (max-width:640px){.brand span{font-size:20px;white-space:normal}.tools{gap:14px;width:100%}.tool{width:100%}.seg{overflow-x:auto}.jump{width:100%}.nav{gap:24px}.asof{display:none}.tile .v{font-size:22px}.chart{height:300px}.chart.tall{height:360px}.brand small{display:none}}
@@ -391,6 +392,26 @@ table.ind td{vertical-align:top}
 .mt-link{font:inherit;color:var(--teal);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
 .mt-pointer{margin-top:-4px}
 .mt-list{padding-left:20px}
+.board.b3{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:700px){.board.b3{grid-template-columns:minmax(0,1fr)}}
+.mx-seg{display:inline-flex;gap:4px;background:var(--sunk);border:1px solid var(--line2);border-radius:999px;padding:4px;margin:10px 0 14px;flex-wrap:wrap}
+.mx-seg button{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--ink2);font:inherit;font-weight:600;font-size:13.5px;border-radius:999px;padding:8px 14px;cursor:pointer}
+.mx-seg button[aria-selected=true]{background:var(--ink);color:#fff}
+.mx-sic svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+.mx-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media(max-width:980px){.mx-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mx-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:1.5px solid var(--line2);border-radius:14px;background:var(--surface);padding:14px;font:inherit;color:var(--ink);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
+.mx-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--teal)}
+.mx-card.on{border-color:var(--teal);background:var(--mastchip);box-shadow:var(--shadow)}
+.mx-card:focus-visible,.mx-seg button:focus-visible,.mx-link:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.mx-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--mastchip);color:var(--teal);flex:0 0 auto}
+.mx-card.on .mx-ic{background:var(--teal);color:#fff}
+.mx-ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mx-ic.big{width:52px;height:52px;background:var(--teal);color:#fff}.mx-ic.big svg{width:28px;height:28px}
+.mx-card b{font-size:15px}.mx-stat{font-size:22px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}.mx-gist{font-size:12.5px;color:var(--ink2)}
+.mx-detail{display:flex;gap:16px;align-items:flex-start;margin-top:14px;padding:16px 18px;border-radius:14px;background:var(--mastchip);border:1px solid var(--line2)}
+.mx-detail h3{margin:0 0 6px;text-transform:none;letter-spacing:0;font-size:17px;color:var(--ink)}.mx-detail p{margin:0 0 8px;color:var(--ink);line-height:1.55}
+.mx-link{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--teal);cursor:pointer;text-decoration:none}.mx-link:hover{text-decoration:underline}
+@media(max-width:560px){.mx-detail{flex-direction:column}}
 .mlist{margin:6px 0 0;padding-left:18px;color:var(--ink2);font-size:14px;line-height:1.5}.mlist li{margin-bottom:8px}.mlist b{color:var(--ink)}
 .mt-pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 9px;vertical-align:middle;background:var(--sunk);color:var(--ink2);border:1px solid var(--line2);white-space:nowrap}
 .mt-pill.built,.mt-pill.automated{background:var(--posbg);color:var(--pos);border-color:var(--pos)}
@@ -1098,8 +1119,9 @@ function drawFxTotals(s){
 
 /* ---------- key takeaways ---------- */
 const firstSentence = t => { const m = String(t || '').match(/^(.+?[.!?])(\s|$)/); return m ? m[1] : String(t || ''); };
-function ktHtml(items){
-  return `<section class="kt" aria-label="Key takeaways"><h3>Key takeaways</h3><ol>${items.map((it, i) => `<li><span class="n">${i + 1}</span><div><span class="tag">${esc(it.tag)}</span><p>${esc(it.text)}</p></div></li>`).join('')}</ol></section>`;
+function ktHtml(items, more){
+  const li = (it, i) => `<li><span class="n">${i + 1}</span><div><span class="tag">${esc(it.tag)}</span><p>${esc(it.text)}</p></div></li>`;
+  return `<section class="kt" aria-label="Key takeaways"><h3>Key takeaways</h3><ol>${items.map(li).join('')}</ol>${more ? `<h4 class="kt-sub">${esc(more.label)}</h4><ol>${more.items.map((it, i) => li(it, i + items.length)).join('')}</ol>` : ''}</section>`;
 }
 const verbRev = v => v == null ? 'changed' : v >= 0 ? `grew ${Math.abs(v).toFixed(1)}%` : `fell ${Math.abs(v).toFixed(1)}%`;
 const KT_WHY = {NVDA:'Customers\u2019 forecasts point to demand doubling next year, but supply of chips, memory, packaging and data-centre sites limits growth to about 70%.'};
@@ -1151,10 +1173,17 @@ function sectorKT(s){
     {tag:'Profitability', text:mv == null ? 'Most companies here report margins half-yearly.' : `Median EBIT margin is ${mv.toFixed(1)}%${mc != null ? `, ${Math.abs(mc).toFixed(1)} points ${mc >= 0 ? 'higher' : 'lower'} than a year ago` : ''}. ${best ? `${best.name} is the most profitable at ${best.ebitLatest.v.toFixed(1)}%.` : ''}`},
   ];
 }
+function homeKTglobal(){
+  const P = MC.pmi, L = P.months.length - 1, K = MC.k;
+  return {label:'The global picture', items:[
+    {tag:'Energy and prices', text:`The Middle East war keeps energy and transport costs high. World inflation is forecast at ${f1(K.world.cpi[0])}% in 2026 (IMF), and global factory input costs rose at the quickest pace since June in October. S&P Global expects further central bank rate hikes.`},
+    {tag:'Growth is narrow', text:`Global growth holds up (IMF ${f1(K.world.gdp[0])}% for 2026, manufacturing PMI ${f1(P.series.Global[L])}, fifteen months above 50), but AI, electronics and defence orders carry it. Consumer-facing demand is weak, especially in Europe.`},
+    {tag:'Main risk', text:'A reassessment of AI profits is the biggest downside risk: the IMF and OECD warn it could cut investment sharply. That would hit the AI supply chain and global factory activity together.'}]};
+}
 function homeKT(){
   const ai = SEC.ai, oem = SEC.oem, t1 = SEC.tier1, se = SEC.semis;
   const m = sectorMedians(se).filter(x => !x.f && x.v != null), lo = m.reduce((x, y) => y.v < x.v ? y : x), last = m[m.length - 1];
-  const P = D.pmi, L = P.months.length - 1, ge = P.series.Germany[L], ez = P.series.Eurozone[L];
+  const P = MC.pmi, L = P.months.length - 1, ge = P.series.Germany[L], ez = P.series.Eurozone[L];
   return [
     {tag:'AI versus automobiles', text:`The AI supply chain grew ${pct(ai.medLatestYoy, 0)} in the latest quarter while automobile companies (${pct(oem.medLatestYoy)}) and their suppliers (${pct(t1.medLatestYoy)}) did not grow. Consensus expects the gap to persist.`},
     {tag:'Chip cycle', text:`Semiconductor growth has swung from ${pct(lo.v, 0)} to ${pct(last.v, 0)} since ${qLab(lo.q)}, and chipmakers report orders ahead of supply and rising prices.`},
@@ -1230,7 +1259,7 @@ const verbG = v => v == null ? 'were flat' : Math.abs(v) < 2 ? 'were flat' : v >
 function homeFxHtml(){
   const rows = SECT.map(s => ({s, v:MODE_KEYS.map(m => medCagrBy(s, m))})).map(r => ({...r, e:r.v[2] - r.v[0]}));
   const big = [...rows].sort((a, b) => Math.abs(b.e) - Math.abs(a.e))[0];
-  return `<section class="panel"><h2>${esc(`Currency matters most in ${big.s.title}: US-dollar conversion moves median 2023-27 growth by ${big.e > 0 ? '+' : '−'}${Math.abs(big.e).toFixed(1)} points`)}</h2>
+  return `<section class="panel" id="homeFx"><h2>${esc(`Currency matters most in ${big.s.title}: US-dollar conversion moves median 2023-27 growth by ${big.e > 0 ? '+' : '−'}${Math.abs(big.e).toFixed(1)} points`)}</h2>
     <p class="sub">Median company revenue CAGR 2023-27 under each currency mode. Use the currency buttons at the top to switch every chart on the site.</p>
     <div class="tscroll"><table><thead><tr><th>Sector</th>${MODE_KEYS.map(m => `<th>${MODE_SHORT[m]}</th>`).join('')}<th>Currency effect</th></tr></thead><tbody>
     ${rows.map(r => `<tr class="link" tabindex="0" data-go="${r.s.id}"><td><span class="nm">${esc(r.s.title)}</span></td>${r.v.map((x, k) => `<td class="${k === MODE_KEYS.indexOf(MODE) ? 'nm' : ''}">${pct(x)}</td>`).join('')}<td class="${cls(r.e)}">${pp(r.e).replace('pp', ' pts')}</td></tr>`).join('')}
@@ -1238,32 +1267,53 @@ function homeFxHtml(){
     <p class="note" style="margin-top:8px">Currency effect is the quarter-average CAGR minus the reported-currency CAGR. A fixed rate leaves growth unchanged by construction.</p></section>`;
 }
 const ASOF = (MC && MC.asOf && MC.asOf > D.asOf) ? MC.asOf : D.asOf;
+const MXS = {dir:'down', open:0};
+const MXI = {
+  demand:'<path d="M3 20h18"/><rect x="5" y="11" width="3" height="9"/><rect x="10.5" y="5" width="3" height="15"/><rect x="16" y="13" width="3" height="7"/>',
+  rates:'<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  coins:'<circle cx="9" cy="9" r="6"/><path d="M15 6.3A6 6 0 1 1 6.3 15"/><path d="M9 6.5v5M7.3 8h3.4"/>',
+  chip:'<rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/>',
+  wrench:'<path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5z"/><path d="M14.5 6.5l3-3"/>',
+  home:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  warn:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>'};
 function homeMacroHtml(){
-  const P = MC.pmi, L = P.months.length - 1, last = n => P.series[n][L], K = MC.k, X = K.zewx;
-  const key = n => K.keys.find(k => k.n === n), zd = X.now['Germany sentiment'] - X.prev['Germany sentiment'];
-  const ai = SEC.ai, oem = SEC.oem, se = SEC.semis;
-  const tiles = [['Global manufacturing PMI, ' + mLab(P.months[L]), f1(last('Global')), 'above 50 for 15 months, 50 = no change'],
-    ['World GDP 2026, IMF', f1(K.world.gdp[0]) + '%', sg1(K.world.gdp[0] - K.world.gdp[2]) + ' vs July forecast'],
-    ['World inflation 2026, IMF', f1(K.world.cpi[0]) + '%', f1(K.world.cpi[1]) + '% in 2027'],
-    ['ZEW sentiment, Germany', f1(X.now['Germany sentiment']), sg1(zd) + ' vs September']];
-  const row = (h, x) => `<li><b>${h}</b> ${x}</li>`;
+  const P = MC.pmi, L = P.months.length - 1, last = n => P.series[n][L], K = MC.k;
+  const key = n => K.keys.find(k => k.n === n), ai = SEC.ai, oem = SEC.oem, se = SEC.semis;
+  const fx = SECT.map(s => ({s, e:medCagrBy(s, MODE_KEYS[2]) - medCagrBy(s, MODE_KEYS[0])})).sort((a, b) => Math.abs(b.e) - Math.abs(a.e))[0];
   const down = [
-    row('Demand.', `Factories are still growing (global PMI ${f1(last('Global'))}), but unevenly: the US ${f1(last('United States'))} and Germany ${f1(last('Germany'))} lead, while France ${f1(last('France'))} and Italy ${f1(last('Italy'))} are contracting. The sector charts show the same split: the AI supply chain ${verbG(ai.medLatestYoy)}, automobile companies ${verbG(oem.medLatestYoy)}.`),
-    row('Costs and rates.', `The IMF expects world inflation of ${f1(K.world.cpi[0])}% in 2026, and October PMI data show input costs rising at the quickest pace since June. Companies that cannot pass costs on lose margin first, so read this against the EBIT margins in the growth and profitability chart.`),
-    row('Regional growth.', `The IMF sees 2026 growth of ${f1(key('United States').gdp[0])}% in the US, ${f1(key('Euro area').gdp[0])}% in the euro area and ${f1(key('China').gdp[0])}% in China. Where a company sells helps explain its growth.`),
-    row('Currency.', 'A stronger or weaker dollar changes reported growth. The currency switch at the top shows by how much for every chart.')];
+    {ic:'demand', t:'Demand', stat:'PMI ' + f1(last('Global')), gist:'Factories are growing, but unevenly', link:['macro-pmi', 'Open the PMI page'],
+     body:`Factories are still growing (global PMI ${f1(last('Global'))}), but unevenly: the US ${f1(last('United States'))} and Germany ${f1(last('Germany'))} lead, while France ${f1(last('France'))} and Italy ${f1(last('Italy'))} are contracting. The sector charts show the same split: the AI supply chain ${verbG(ai.medLatestYoy)}, automobile companies ${verbG(oem.medLatestYoy)}.`},
+    {ic:'rates', t:'Costs and rates', stat:f1(K.world.cpi[0]) + '%', gist:'World inflation expected in 2026', link:['macro-cpi', 'Open the inflation page'],
+     body:`The IMF expects world inflation of ${f1(K.world.cpi[0])}% in 2026, and October PMI data show input costs rising at the quickest pace since June. Companies that cannot pass costs on lose margin first, so read this against the EBIT margins in the growth and profitability chart.`},
+    {ic:'globe', t:'Regional growth', stat:f1(key('United States').gdp[0]) + '% vs ' + f1(key('Euro area').gdp[0]) + '%', gist:'US against euro area growth, 2026', link:['macro-gdp', 'Open the GDP page'],
+     body:`The IMF sees 2026 growth of ${f1(key('United States').gdp[0])}% in the US, ${f1(key('Euro area').gdp[0])}% in the euro area and ${f1(key('China').gdp[0])}% in China. Where a company sells helps explain its growth.`},
+    {ic:'coins', t:'Currency', stat:(fx.e > 0 ? '+' : '−') + Math.abs(fx.e).toFixed(1) + ' pts', gist:'Largest effect: ' + fx.s.title, scroll:['homeFx', 'Show the currency table'],
+     body:'A stronger or weaker dollar changes reported growth. The currency switch at the top shows by how much for every chart on the site.'}];
   const up = [
-    row('AI investment lifts factories.', 'Eurozone investment goods output is at its best since the post-COVID rebound, ASEAN new orders hit a record on AI demand, and US factories struggle to meet demand for AI equipment (S&P Global PMI, October).'),
-    row('Chips add to costs.', `Electronic component shortages and high prices raise input costs in Germany and the UK, while Japan reports strong demand for semiconductors. Semiconductor revenue ${verbG(se.medLatestYoy)} in the latest quarter.`),
-    row('Weak households drag.', 'Consumer goods output is falling in the eurozone and the UK, which is consistent with soft automobile growth in Europe.'),
-    row('A shared risk.', 'The IMF and OECD warn that an AI profit reassessment could cut investment sharply. That would hit sector growth and the PMI together.')];
-  return `<section class="panel"><h2>The macroeconomic backdrop: the sectors and the economy move each other</h2>
-    <p class="sub">Macroeconomic indicators set demand, costs and financing for the sectors above. The sectors, in turn, feed back into the indicators.</p>
-    <div class="board">${tiles.map(x => `<div class="tile"><div class="k">${esc(x[0])}</div><div class="v">${esc(x[1])}</div><div class="d">${esc(x[2])}</div></div>`).join('')}</div>
-    <div class="grid2" style="margin-top:12px">
-      <div><h3>How the economy affects the sectors</h3><ul class="mlist">${down.join('')}</ul></div>
-      <div><h3>How the sectors affect the economy</h3><ul class="mlist">${up.join('')}</ul></div></div>
-    <p class="note" style="margin-top:8px">Sources: IMF World Economic Outlook, October 2026; S&amp;P Global and J.P.Morgan PMI releases, October 2026; ZEW. <a href="#macro">Open the macroeconomic pages</a> for GDP, PMI, inflation and ZEW in detail.</p></section>`;
+    {ic:'chip', t:'AI investment', stat:pct(ai.medLatestYoy, 0), gist:'AI chain growth lifts factory output', link:['macro-pmi', 'Open the PMI page'],
+     body:'Eurozone investment goods output is at its best since the post-COVID rebound, ASEAN new orders hit a record on AI demand, and US factories struggle to meet demand for AI equipment (S&P Global PMI, October).'},
+    {ic:'wrench', t:'Chip costs', stat:pct(se.medLatestYoy, 0), gist:'Semiconductor growth, shortages add cost', link:['macro-pmi', 'Open the PMI page'],
+     body:`Electronic component shortages and high prices raise input costs in Germany and the UK, while Japan reports strong demand for semiconductors. Semiconductor revenue ${verbG(se.medLatestYoy)} in the latest quarter.`},
+    {ic:'home', t:'Weak households', stat:pct(oem.medLatestYoy, 0), gist:'Automobile OEM growth, consumer goods falling', link:['macro-pmi', 'Open the PMI page'],
+     body:'Consumer goods output is falling in the eurozone and the UK, which is consistent with soft automobile growth in Europe.'},
+    {ic:'warn', t:'A shared risk', stat:'AI capex', gist:'One shock would hit both sides', link:['macro-gdp', 'Open the GDP page'],
+     body:'The IMF and OECD warn that an AI profit reassessment could cut investment sharply. That would hit sector growth and the PMI together.'}];
+  const cards = MXS.dir === 'down' ? down : up, o = Math.min(MXS.open, cards.length - 1), c = cards[o];
+  const svg = n => `<svg viewBox="0 0 24 24" aria-hidden="true">${MXI[n]}</svg>`;
+  return `<section class="panel" id="homeMacro"><h2>The macroeconomic backdrop: the sectors and the economy move each other</h2>
+    <p class="sub">Macroeconomic indicators set demand, costs and financing for the sectors. The sectors, in turn, feed back into the indicators. Pick a direction, then a card.</p>
+    <div class="mx-seg" role="tablist" aria-label="Direction of influence"><button type="button" role="tab" data-mxdir="down" aria-selected="${MXS.dir === 'down'}"><span class="mx-sic">${svg('globe')}</span>Economy affects sectors</button><button type="button" role="tab" data-mxdir="up" aria-selected="${MXS.dir === 'up'}"><span class="mx-sic">${svg('chip')}</span>Sectors affect economy</button></div>
+    <div class="mx-cards">${cards.map((x, i) => `<button type="button" class="mx-card ${i === o ? 'on' : ''}" data-mxi="${i}" aria-pressed="${i === o}"><span class="mx-ic">${svg(x.ic)}</span><b>${esc(x.t)}</b><span class="mx-stat">${esc(x.stat)}</span><span class="mx-gist">${esc(x.gist)}</span></button>`).join('')}</div>
+    <div class="mx-detail" aria-live="polite"><span class="mx-ic big">${svg(c.ic)}</span><div><h3>${esc(c.t)}</h3><p>${c.body}</p>${c.link ? `<a class="mx-link" href="#${c.link[0]}">${esc(c.link[1])} →</a>` : `<button type="button" class="mx-link" data-mxscroll="${c.scroll[0]}">${esc(c.scroll[1])} →</button>`}</div></div>
+    <p class="note" style="margin-top:8px">Sources: IMF World Economic Outlook, October 2026; S&amp;P Global and J.P.Morgan PMI releases, October 2026.</p></section>`;
+}
+function mxBind(){
+  const root = document.getElementById('homeMacro'); if (!root) return;
+  const redo = () => { const y = window.scrollY; root.outerHTML = homeMacroHtml(); mxBind(); window.scrollTo(0, y); };
+  root.querySelectorAll('[data-mxdir]').forEach(b => b.addEventListener('click', () => { MXS.dir = b.dataset.mxdir; MXS.open = 0; redo(); }));
+  root.querySelectorAll('[data-mxi]').forEach(b => b.addEventListener('click', () => { MXS.open = +b.dataset.mxi; redo(); const n = document.querySelector(`#homeMacro [data-mxi="${MXS.open}"]`); if (n) n.focus({preventScroll:true}); }));
+  root.querySelectorAll('[data-mxscroll]').forEach(b => b.addEventListener('click', () => { const e = document.getElementById(b.dataset.mxscroll); if (e) e.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); }));
 }
 function home(){
   setNav('home');
@@ -1274,15 +1324,20 @@ function home(){
   <div class="eyebrow"><span>Overview</span><span>Data as of ${fmtDate(ASOF)}</span><span>51 companies · 7 sectors</span></div>
   <h1>Industrial growth is coming from AI: the AI supply chain grew ${ai.medLatestYoy.toFixed(0)}%, while ${verbG(oem.medLatestYoy) === verbG(t1.medLatestYoy) ? `automobile companies and their suppliers ${verbG(oem.medLatestYoy)}` : `automobile companies ${verbG(oem.medLatestYoy)} and their suppliers ${verbG(t1.medLatestYoy)}`}</h1>
   <p class="lead">Median revenue growth in each sector's latest reported quarter, against what consensus expects for the next four quarters. Consensus does not expect the gap between the AI chain and the automobile industry to close over the next year. ${modeText()}</p>
-  ${ktHtml(homeKT())}
+  ${ktHtml(homeKT(), homeKTglobal())}
   <div class="board">
     <div class="tile"><div class="k">Data Centre and AI, latest quarter</div><div class="v up">${pct(ai.medLatestYoy)}</div><div class="d">next 4 quarters ${pct(ai.medNext4)}</div></div>
     <div class="tile"><div class="k">Semiconductors, latest quarter</div><div class="v ${cls(se.medLatestYoy)}">${pct(se.medLatestYoy)}</div><div class="d">next 4 quarters ${pct(se.medNext4)}</div></div>
     <div class="tile"><div class="k">Automotive OEMs, latest quarter</div><div class="v ${cls(oem.medLatestYoy)}">${pct(oem.medLatestYoy)}</div><div class="d">next 4 quarters ${pct(oem.medNext4)}</div></div>
     <div class="tile"><div class="k">Automotive Tier 1, latest quarter</div><div class="v ${cls(t1.medLatestYoy)}">${pct(t1.medLatestYoy)}</div><div class="d">next 4 quarters ${pct(t1.medNext4)}</div></div>
   </div>
+  ${(() => { const P = MC.pmi, L = P.months.length - 1, K = MC.k, X = K.zewx, zd = X.now['Germany sentiment'] - X.prev['Germany sentiment']; return `<div class="board" aria-label="Macroeconomic scorecards">
+    <div class="tile"><div class="k">Global manufacturing PMI, ${mLab(P.months[L])}</div><div class="v up">${f1(P.series.Global[L])}</div><div class="d">above 50 for 15 months</div></div>
+    <div class="tile"><div class="k">World GDP growth 2026, IMF</div><div class="v up">${f1(K.world.gdp[0])}%</div><div class="d">${sg1(K.world.gdp[0] - K.world.gdp[2])} vs July forecast</div></div>
+    <div class="tile"><div class="k">World inflation 2026, IMF</div><div class="v down">${f1(K.world.cpi[0])}%</div><div class="d">${f1(K.world.cpi[1])}% in 2027</div></div>
+    <div class="tile"><div class="k">German investor sentiment, ZEW</div><div class="v ${zd >= 0 ? 'up' : 'down'}">${f1(X.now['Germany sentiment'])}</div><div class="d">${sg1(zd)} vs September</div></div>
+  </div>`; })()}
   <div class="stack">
-    ${homeMacroHtml()}
     <section class="panel">
       <div class="phead"><div><h2>Growth momentum: AI and electrification lead, automobiles lag</h2>
       </div></div>
@@ -1317,6 +1372,7 @@ function home(){
       <p class="note how" style="margin-top:8px"><b>How to read it:</b> each block is a company. Size = latest quarterly revenue in US dollars, colour = y/y growth. Big green blocks drive sector growth and big red blocks are a drag. Click a block to open the company.</p>
     </section>
     <section><h3>Sectors</h3><div class="cards" id="hCards"></div></section>
+    ${homeMacroHtml()}
     ${homeFxHtml()}
     <div class="grid2">
       <section class="panel"><h2>Results coming up: what to watch and when</h2><p class="sub">Next reporting dates from company investor calendars</p><div class="cal">${calItems(up)}</div></section>
@@ -1325,6 +1381,7 @@ function home(){
     </div>
   </div>`;
   bindRows();
+  mxBind();
   const order = [...SECT].sort((a, b) => b.medLatestYoy - a.medLatestYoy);
   const cats = order.map(s => s.title);
   const ch = mk(document.getElementById('hSect'), {...baseAxis(),
