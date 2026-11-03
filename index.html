@@ -243,6 +243,8 @@ blockquote cite{font-style:normal;font-size:var(--s1);color:var(--ink3)}
 .prose p,.prose li{color:var(--ink2)}
 .prose h2{margin-top:28px}
 .prose code{font-family:var(--mono);font-size:.9em;background:var(--sunk);padding:1px 5px;border-radius:4px}
+footer a{color:inherit;text-decoration:underline;text-underline-offset:2px}footer a:hover{color:var(--ink)}
+.mlinks{display:flex;gap:8px;margin-left:auto}.byme{color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:#fff}.byme:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 footer{border-top:1px solid var(--line);color:var(--ink3);font-size:var(--s1)}
 footer .wrap{padding-block:20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0;border:1px solid var(--surface)}
@@ -281,7 +283,7 @@ th{border-bottom:0}
 .kt .kt-sub{margin:18px 0 10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);font-weight:700}
 .kt .tag{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin:1px 0 4px}
 .kt p{margin:0;color:var(--ink);font-size:14.5px;line-height:1.5}
-@media (max-width:640px){.brand span{font-size:20px;white-space:normal}.tools{gap:14px;width:100%}.tool{width:100%}.seg{overflow-x:auto}.jump{width:100%}.nav{gap:24px}.asof{display:none}.tile .v{font-size:22px}.chart{height:300px}.chart.tall{height:360px}.brand small{display:none}}
+@media (max-width:640px){.mlinks{margin-left:0}.brand span{font-size:20px;white-space:normal}.tools{gap:14px;width:100%}.tool{width:100%}.seg{overflow-x:auto}.jump{width:100%}.nav{gap:24px}.asof{display:none}.tile .v{font-size:22px}.chart{height:300px}.chart.tall{height:360px}.brand small{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .tool{position:relative}
 .info{font:italic 700 12px/1 Georgia,serif;width:18px;height:18px;border-radius:50%;border:0;background:#1F2A2E;color:#fff;cursor:pointer;padding:0;margin-left:5px;vertical-align:1px;text-transform:none;letter-spacing:0}
@@ -533,6 +535,7 @@ table.ind td{vertical-align:top}
 <header class="mast">
   <div class="wrap mast-top">
     <a class="brand" href="#home"><svg class="logo" viewBox="2 2 36 36" width="40" height="40" aria-hidden="true"><g transform="rotate(-90 20 20)"><circle cx="20" cy="20" r="13" fill="none" stroke="#E25B45" stroke-width="7" stroke-dasharray="22.90 58.78" stroke-dashoffset="0.00"/><circle cx="20" cy="20" r="13" fill="none" stroke="#FA8057" stroke-width="7" stroke-dasharray="17.19 64.49" stroke-dashoffset="-24.50"/><circle cx="20" cy="20" r="13" fill="none" stroke="#FACC72" stroke-width="7" stroke-dasharray="13.92 67.76" stroke-dashoffset="-43.29"/><circle cx="20" cy="20" r="13" fill="none" stroke="#88D5C9" stroke-width="7" stroke-dasharray="10.65 71.03" stroke-dashoffset="-58.81"/><circle cx="20" cy="20" r="13" fill="none" stroke="#ADC865" stroke-width="7" stroke-dasharray="9.02 72.66" stroke-dashoffset="-71.06"/></g></svg><span>Market Intelligence<small>Sector, company and macro intelligence by Abhinav</small></span></a>
+    <div class="mlinks"><a class="byme" href="https://abhinavescp.github.io/portfolio/" target="_blank" rel="noopener">Portfolio</a><a class="byme" href="https://www.linkedin.com/in/abhinav-kumar-escp/" target="_blank" rel="noopener">LinkedIn</a></div>
     <div class="tools">
       <div class="tool tray"><div class="trayin"><span class="tlabel">Forex effect <button type="button" class="info" id="fxInfoBtn" aria-label="What does the forex effect setting mean?" aria-expanded="false" aria-controls="fxInfo">i</button></span>
         <div class="seg" role="group" aria-label="Forex effect: currency basis" id="curSeg">
@@ -561,7 +564,7 @@ table.ind td{vertical-align:top}
 <div class="subnav" id="subnav" hidden><div class="wrap" id="subnavIn"></div></div>
 <main class="wrap" id="app"></main>
 <div class="tour" id="tour" role="dialog" aria-modal="true" aria-labelledby="tourT" aria-live="polite"><div class="tspot" id="tourSpot"></div><div class="tcard" id="tourCard"><div class="tstep" id="tourN"></div><h3 id="tourT"></h3><p id="tourP"></p><div class="tact"><button type="button" class="tgo" id="tourGo"></button><button type="button" class="tskip" id="tourSkip">Skip</button></div></div></div>
-<footer><div class="wrap"><span>Built by Abhinav from company filings, earnings calls and consensus estimates, together with publicly available sources such as S&amp;P Global, J.P.Morgan, the IMF, the OECD, ZEW and other institutions. Not investment advice. This site uses basic analytics.<br>© 2026 Abhinav Kumar. All rights reserved.</span><span id="asof"></span></div></footer>
+<footer><div class="wrap"><span>Built by <a href="https://abhinavescp.github.io/portfolio/" target="_blank" rel="noopener">Abhinav</a> from company filings, earnings calls and consensus estimates, together with publicly available sources such as S&amp;P Global, J.P.Morgan, the IMF, the OECD, ZEW and other institutions. Not investment advice. This site uses basic analytics.<br>© 2026 Abhinav Kumar. All rights reserved. <a href="https://abhinavescp.github.io/portfolio/" target="_blank" rel="noopener">Portfolio</a> · <a href="https://www.linkedin.com/in/abhinav-kumar-escp/" target="_blank" rel="noopener">LinkedIn</a></span><span id="asof"></span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script>
@@ -1369,7 +1372,7 @@ function home(){
         <p class="kf" id="kfBub"></p><p class="mean" id="kfBubM"></p>
         <div class="chart tall" id="hBub"></div>
         <div class="legend"></div>
-        <p class="note how" style="margin-top:8px"><b>How to read it:</b> each bubble is a company. Right = faster y/y revenue growth, higher = higher EBIT margin, bigger = more quarterly revenue in US dollars. The top right is where growth and profitability meet. Click a bubble to open the company.</p></section>
+        <p class="note how" style="margin-top:8px" id="bubCount"></p><p class="note how" style="margin-top:8px"><b>How to read it:</b> each bubble is a company. Right = faster y/y revenue growth, higher = higher EBIT margin, bigger = more quarterly revenue in US dollars. The top right is where growth and profitability meet. Click a bubble to open the company.</p></section>
       <section class="panel"><h2>Momentum shift: which sectors are accelerating and which are fading</h2>
         <p class="kf" id="kfAcc"></p><p class="mean" id="kfAccM"></p>
         <div class="chart tall" id="hAcc"></div>
@@ -1470,6 +1473,8 @@ function findingBubble(){
   const grp = ids => cs.filter(o => ids.includes(o.s.id)), au = grp(['oem', 'tier1']), ai = grp(['ai']);
   if (!au.length || !ai.length) return;
   const mm = (a, f) => median(a.map(f));
+  { const inCs = new Set(cs.map(o => o.c.name)), all = SECT.flatMap(s => s.tickers.map(t => C[t])), miss = all.filter(c => !inCs.has(c.name)).map(c => c.name), extra = Object.keys(C).filter(k => !SECT.some(s => s.tickers.includes(k))).map(k => C[k].name), el = document.getElementById('bubCount');
+    if (el) el.innerHTML = `<b>Why ${cs.length} and not 51:</b> the site covers 51 companies. ${extra.length} of them (${listJoin(extra)}) are tracked in the AI demand section rather than in a sector, which leaves ${all.length} in the sectors. This chart plots the ${cs.length} of those with revenue growth, an EBIT margin and a size ranking available, so ${listJoin(miss)} ${miss.length === 1 ? 'is' : 'are'} left out.`; }
   kfSet('kfBub', `${fast.length} of ${cs.length} companies are growing 20% or more, and ${rich.length} of those also earn an EBIT margin of 30% or higher. The contrast is sharp: the median ${esc(SEC.ai.title)} company earns ${mm(ai, o => o.c.ebitLatest.v).toFixed(0)}% on growth of ${pct(mm(ai, o => o.c.latestYoy), 0)}, while the median Automotive OEM or Tier 1 company earns ${mm(au, o => o.c.ebitLatest.v).toFixed(0)}% on growth of ${pct(mm(au, o => o.c.latestYoy))}.`, `Strong growth and strong margins tend to come together, so the AI and chip leaders can fund their own expansion. Automotive companies earn thinner margins on little growth, which leaves less room to invest or absorb a downturn.`);
 }
 function findingAccel(){
@@ -1479,7 +1484,7 @@ function findingAccel(){
   const byN = [...p].sort((a, b) => b.medNext4 - a.medNext4), lead = byN[0], next = byN[1];
   const ratio = next.medNext4 > 0 ? ` about ${(lead.medNext4 / next.medNext4).toFixed(1)} times the next fastest sector, ${esc(next.title)} at ${Math.round(next.medNext4)}%.` : ` far ahead of every other sector.`;
   const cool = d(dn) < -2;
-  kfSet('kfAcc', `${esc(lead.title)} is expected to grow ${Math.round(lead.medNext4)}% over the next four quarters,${ratio} ${up === lead ? 'It is also the sector gaining the most speed' : `The sector gaining the most speed is ${esc(up.title)}`} (growth rising from ${pct(up.medLatestYoy)} to ${pct(up.medNext4)}). ${cool ? `The sector losing the most speed is ${esc(dn.title)} (growth easing from ${pct(dn.medLatestYoy)} to ${pct(dn.medNext4)}).` : (d(dn) >= -0.5 ? `No sector is expected to slow down; the smallest change is in ${esc(dn.title)} (from ${pct(dn.medLatestYoy)} to ${pct(dn.medNext4)}).` : `No sector is expected to lose much speed; ${esc(dn.title)} comes closest, moving from ${pct(dn.medLatestYoy)} to ${pct(dn.medNext4)}.`)} Automotive OEMs and Tier 1 stay near ${pct(SEC.oem.medNext4)} and ${pct(SEC.tier1.medNext4)}, so consensus does not expect a recovery.`, `A dot above the dashed line is a sector where orders are expected to pick up, which is good news for its suppliers. A dot on or below the line means today's pace is as good as it gets. Only ${esc(lead.title)} is expected to pull far ahead.`);
+  kfSet('kfAcc', `${esc(lead.title)} is expected to grow ${Math.round(lead.medNext4)}% over the next four quarters,${ratio} ${up === lead ? 'It is also the sector gaining the most speed' : `The sector gaining the most speed is ${esc(up.title)}`} (growth rising from ${pct(up.medLatestYoy)} to ${pct(up.medNext4)}). ${cool ? `The sector losing the most speed is ${esc(dn.title)} (growth easing from ${pct(dn.medLatestYoy)} to ${pct(dn.medNext4)}).` : (d(dn) >= -0.5 ? `No sector is expected to slow down; the smallest change is in ${esc(dn.title)} (from ${pct(dn.medLatestYoy)} to ${pct(dn.medNext4)}).` : `No sector is expected to lose much speed; ${esc(dn.title)} comes closest, moving from ${pct(dn.medLatestYoy)} to ${pct(dn.medNext4)}.`)} ${up.id === 'oem' || up.id === 'tier1' ? `The gain for ${esc(up.title)} is a rebound from decline to roughly flat, not a real upturn: with ${up.id === 'oem' ? 'Tier 1' : 'OEMs'}, they stay near ${pct(SEC.oem.medNext4)} and ${pct(SEC.tier1.medNext4)}, and consensus does not expect a recovery.` : `Automotive OEMs and Tier 1 stay near ${pct(SEC.oem.medNext4)} and ${pct(SEC.tier1.medNext4)}, so consensus does not expect a recovery.`}`, `A dot above the dashed line is a sector where orders are expected to pick up, which is good news for its suppliers. A dot on or below the line means today's pace is as good as it gets. Only ${esc(lead.title)} is expected to pull far ahead.`);
 }
 function findingTree(){
   const rows = SECT.flatMap(s => s.tickers.map(t => ({s, u:CM.qavg[t], c:C[t]}))).filter(o => o.c.rank && o.u && o.u.latestRev && o.u.latestYoy != null && o.u.latestYoy > -99);
