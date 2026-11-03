@@ -1,0 +1,45 @@
+name: Results alert
+
+# Runs every weekday morning and can also be started by hand from the Actions tab.
+# 06:00 UTC is 07:00 in Berlin in winter and 08:00 in summer.
+on:
+  schedule:
+    - cron: "0 6 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read the results calendar
+        run: python3 scripts/check_results.py --html index.html
+
+      - name: Create, update or close the alert issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Results to load into the dashboard"
+          DUE=$(cat due_count.txt)
+          NUM=$(gh issue list --state open --limit 100 --json number,title \
+            --jq ".[] | select(.title==\"$TITLE\") | .number" | head -n1)
+          if [ "$DUE" -gt 0 ]; then
+            if [ -n "$NUM" ]; then
+              gh issue edit "$NUM" --body-file report.md
+            else
+              gh issue create --title "$TITLE" --body-file report.md
+            fi
+          elif [ -n "$NUM" ]; then
+            gh issue close "$NUM" --comment "All reported results are now marked Released."
+          fi
