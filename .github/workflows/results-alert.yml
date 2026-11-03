@@ -29,16 +29,25 @@ jobs:
       - name: Create, update or close the alert issue
         env:
           GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
         run: |
           TITLE="Results to load into the dashboard"
           DUE=$(cat due_count.txt)
           NUM=$(gh issue list --state open --limit 100 --json number,title \
             --jq ".[] | select(.title==\"$TITLE\") | .number" | head -n1)
+
           if [ "$DUE" -gt 0 ]; then
-            if [ -n "$NUM" ]; then
-              gh issue edit "$NUM" --body-file report.md
+            if [ -z "$NUM" ]; then
+              # New issue, assigned to the repo owner so GitHub sends a notification.
+              gh issue create --title "$TITLE" --body-file report.md --assignee "$OWNER"
             else
-              gh issue create --title "$TITLE" --body-file report.md
+              # Only update and notify when the list of waiting companies has changed.
+              OLD=$(gh issue view "$NUM" --json body --jq .body | grep '^- \[ \]' | sort || true)
+              NEW=$(grep '^- \[ \]' report.md | sort || true)
+              if [ "$OLD" != "$NEW" ]; then
+                gh issue edit "$NUM" --body-file report.md
+                gh issue comment "$NUM" --body "The list of companies waiting to be loaded has changed. @$OWNER"
+              fi
             fi
           elif [ -n "$NUM" ]; then
             gh issue close "$NUM" --comment "All reported results are now marked Released."
