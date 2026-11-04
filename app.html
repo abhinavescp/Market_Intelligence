@@ -989,10 +989,11 @@ function addAxisTitles(el, opt){
   if (yTitle && typeof grid.left === 'number') grid.left += 24;
   // crowded category labels: rotate, or thin the value ticks on narrow charts
   if (catX && Array.isArray(cx.data) && !(cx.axisLabel && cx.axisLabel.interval != null && cx.axisLabel.interval !== 0)) {
-    const n = cx.data.length, mx = Math.max(...cx.data.map(d => String(d).length)), slot = (W - 90) / n;
+    const n = cx.data.length, mx = Math.max(...cx.data.map(d => String(d).length)), slot = (W - (Array.isArray(opt.series) && opt.series.some(s => s.type === 'heatmap') ? 170 : 90)) / n;
     const mw = Math.max(...cx.data.map(d => Math.max(...String(d).split(/[ ,]+/).map(w => w.length))));
     if (slot < mx * 6.4 + 8 && n <= 8 && slot > 38 && mw * 6.3 <= slot - 6) { const lines = Math.min(3, Math.ceil(mx * 6.2 / (slot - 6))), extra = lines * 13; nx[0] = {...nx[0], axisLabel:{...(nx[0].axisLabel || {}), interval:0, width:Math.floor(slot - 6), overflow:'break', lineHeight:14, rotate:0}}; if (nx[0].name) nx[0] = {...nx[0], nameGap:nx[0].nameGap + extra - 6}; if (typeof grid.bottom === 'number') grid.bottom += 0; }
-    else if (slot < mx * 6.4 + 8 && n <= 16) { nx[0] = {...nx[0], axisLabel:{...(nx[0].axisLabel || {}), interval:0, margin:14, rotate:slot < mx * 3.4 + 6 ? 90 : 40}}; const r90 = slot < mx * 3.4 + 6, extra = Math.min(70, Math.round(r90 ? mx * 6 : mx * 3.8)); if (nx[0].name) nx[0] = {...nx[0], nameGap:nx[0].nameGap + extra + 6}; }
+    else if (slot < mx * 6.4 + 8 && n > 16) { nx[0] = {...nx[0], axisLabel:{...(nx[0].axisLabel || {}), interval:'auto', rotate:0, hideOverlap:true}}; }
+    else if (slot < mx * 6.4 + 8 && n <= 16) { nx[0] = {...nx[0], axisLabel:{...(nx[0].axisLabel || {}), interval:slot < 15 ? 1 : 0, margin:14, rotate:slot < mx * 3.4 + 6 ? 90 : 40}}; const r90 = slot < mx * 3.4 + 6, extra = Math.min(70, Math.round(r90 ? mx * 6 : mx * 3.8)); if (nx[0].name) nx[0] = {...nx[0], nameGap:nx[0].nameGap + extra + 6}; }
   }
   if (!catX && W < 620 && nx[0].splitNumber == null) { const lab = catY && Array.isArray(cy.data) ? Math.max(...cy.data.map(d => String(d).length)) * 6.2 : 0; nx[0] = {...nx[0], splitNumber:Math.max(1, Math.floor((W - 90 - lab) / 90)), interval:undefined}; }
   if (catX && cx.type === 'category' && ys.length === 1 && !cy.name && cy.axisLine === undefined) {}
@@ -1011,10 +1012,10 @@ function addAxisTitles(el, opt){
     const stacked = bars.some(s => s.stack);
     o.series = opt.series.map(s => {
       if (s.type === 'bar' && nCat && !stacked && s.label && s.label.show && room < need) return {...s, label:{...s.label, show:false}};
-      if (s.markArea && s.markArea.label && W < 620) s = {...s, markArea:{...s.markArea, label:{...s.markArea.label, show:false}}};
+      if (s.markArea && s.markArea.label && (W < 620 || (W < 1180 && bars.some(b => b.label && b.label.show)))) s = {...s, markArea:{...s.markArea, label:{...s.markArea.label, show:false}}};
       if (s.type === 'heatmap' && W < 620 && s.label) return {...s, label:{...s.label, show:false}};
       if (s.type === 'line' && s.markPoint && W < 620) return {...s, markPoint:undefined};
-      if (s.type === 'line' && s.endLabel && s.endLabel.show) return W < 620 ? {...s, endLabel:{...s.endLabel, show:false}} : {...s, labelLayout:{moveOverlap:'shiftY'}};
+      if (s.type === 'line' && s.endLabel && s.endLabel.show) return W < 620 ? {...s, endLabel:{...s.endLabel, show:false}} : (s.endLabel.offset ? s : {...s, labelLayout:{moveOverlap:'shiftY'}});
       return s;
     });
     if (catX && opt.series.some(s => ['bar','line'].includes(s.type) && (s.data || []).some(d => (d && d.value !== undefined ? d.value : d) < 0)) && !(nx[0].axisLine && nx[0].axisLine.onZero === false))
@@ -1383,7 +1384,7 @@ function home(){
         <p class="kf" id="kfBub"></p><p class="mean" id="kfBubM"></p>
         <div class="chart tall" id="hBub"></div>
         <div class="legend"></div>
-        <p class="note how" style="margin-top:8px" id="bubCount"></p><p class="note how" style="margin-top:8px"><b>How to read it:</b> each bubble is a company. Right = faster y/y revenue growth, higher = higher EBIT margin, bigger = more quarterly revenue in US dollars. The top right is where growth and profitability meet. Click a bubble to open the company.</p></section>
+        <p class="note how" style="margin-top:8px"><b>How to read it:</b> each bubble is a company. Right = faster y/y revenue growth, higher = higher EBIT margin, bigger = more quarterly revenue in US dollars. The top right is where growth and profitability meet. Click a bubble to open the company. <span id="bubCount" style="display:block;margin-top:6px"></span></p></section>
       <section class="panel"><h2>Momentum shift: which sectors are accelerating and which are fading</h2>
         <p class="kf" id="kfAcc"></p><p class="mean" id="kfAccM"></p>
         <div class="chart tall" id="hAcc"></div>
@@ -2276,7 +2277,7 @@ const zoomOpt = () => ([{type:'inside'}, {type:'slider', height:16, bottom:6, bo
 function hbr(id, items, o = {}){   // items: [{n, v, c}]
   const it = items.filter(x => x.v != null).sort((a, b) => o.asc ? a.v - b.v : b.v - a.v);
   return drawInto(id, {...AX(), grid:{left:8, right:48, top:o.ref != null ? 28 : 12, bottom:8, containLabel:true}, tooltip:{...AX().tooltip, axisPointer:{type:'shadow'}, valueFormatter:v => v == null ? '' : f1(v) + (o.unit ?? '%')},
-    xAxis:axisVal(v => v + (o.unit || ''), o.xExtra || {}), yAxis:axisCat(it.map(x => x.n), {inverse:true, axisLabel:{color:css('--ink'), fontSize:12}}),
+    xAxis:axisVal(v => v + (o.unit || ''), {min:r => r.min < 0 ? r.min * 1.5 : r.min, ...(o.xExtra || {})}), yAxis:axisCat(it.map(x => x.n), {inverse:true, axisLabel:{color:css('--ink'), fontSize:12}}),
     series:[{type:'bar', data:it.map(x => ({value:x.v, itemStyle:{color:x.c, borderRadius:x.v < 0 ? [4, 0, 0, 4] : [0, 4, 4, 0]}, label:{position:x.v < 0 ? 'left' : 'right'}})), barMaxWidth:20, label:{show:true, position:'right', formatter:p => f1(p.value) + (o.unit ?? '%'), color:css('--ink2'), fontSize:11},
       markLine:o.ref != null ? {silent:true, symbol:'none', lineStyle:{color:css('--ink3'), type:'dashed'}, label:{formatter:o.refLab || '', color:css('--ink2'), fontSize:11, position:'start'}, data:[{xAxis:o.ref}]} : undefined}]});
 }
@@ -2441,9 +2442,13 @@ function macroGDP(){
   const ln = Object.keys(vint.series);
   { const ch = ln.map(n => [n, r1(vint.series[n][vint.series[n].length - 1] - vint.series[n][0])]).sort((a, b) => b[1] - a[1]), w = vint.series.World;
     kfSet('kf_gVint', `World 2026 growth across the four releases: ${w.map(f1).join(', ')}%. Since January, ${ch[0][0]} moved most up (${sg1(ch[0][1])}) and ${ch[ch.length - 1][0]} most down (${sg1(ch[ch.length - 1][1])}).`, ''); }
-  drawInto('gVint', {...AX(), legend:{type:'scroll', bottom:0, textStyle:{color:css('--ink2'), fontSize:11}, icon:'roundRect'}, grid:{left:8, right:70, top:20, bottom:36, containLabel:true}, tooltip:{...AX().tooltip, valueFormatter:tipPct},
+  const gdpOff = {}; { const ppu = 40.5, GAP = 14;
+    const o2 = ln.map(n => ({n, y:-vint.series[n][vint.series[n].length - 1] * ppu})).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < o2.length; i++) if (o2[i].y - o2[i - 1].y < GAP) o2[i].y = o2[i - 1].y + GAP;
+    o2.forEach(d => gdpOff[d.n] = d.y - (-vint.series[d.n][vint.series[d.n].length - 1] * ppu)); }
+  drawInto('gVint', {...AX(), legend:{type:'scroll', bottom:0, textStyle:{color:css('--ink2'), fontSize:11}, icon:'roundRect'}, grid:{left:8, right:92, top:20, bottom:36, containLabel:true}, tooltip:{...AX().tooltip, valueFormatter:tipPct},
     xAxis:axisCat(vint.labels, {boundaryGap:false}), yAxis:axisVal(v => v + '%'),
-    series:ln.map((n, i) => ({name:n, type:'line', symbol:'circle', symbolSize:6, data:vint.series[n], lineStyle:{width:n === 'World' ? 4 : 2, color:MX[i]}, itemStyle:{color:MX[i]}, endLabel:{show:true, formatter:'{a}', fontSize:10, color:MX[i]}}))});
+    series:ln.map((n, i) => ({name:n, type:'line', symbol:'circle', symbolSize:6, data:vint.series[n], lineStyle:{width:n === 'World' ? 4 : 2, color:MX[i]}, itemStyle:{color:MX[i]}, endLabel:{show:true, formatter:'{a}', fontSize:10, color:MX[i], offset:[0, gdpOff[n] || 0]}}))});
   kfSet('kf_gWorld', 'The gap between forecasters is mostly weighting: PPP for IMF and OECD, market rates for S&P Global.', '');
   gbar('gWorld', ['IMF, Oct', 'OECD, Sep', 'S&P Global, Oct'], [{name:'2026', data:[W.gdp[0], W.ogdp[0], 2.6], color:vbar('#2E978B')}, {name:'2027', data:[W.gdp[1], W.ogdp[1], null], color:vbar('#E0A133')}], {labels:true, bw:30});
   const G = K.groups;
